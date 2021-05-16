@@ -42,6 +42,15 @@ async def on_message(message):
     now = datetime.now()  # datetime object var, local so that it constantly updates date/time
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     msg = message.content
+    msg_parameters = msg.split(" ")
+    parameter = ""
+    second_parameter = ""
+
+    # check if additional parameters added to command
+    if len(msg_parameters) == 2:
+        parameter = msg_parameters[1]
+    elif len(msg_parameters) == 3:
+        second_parameter = msg_parameters[2]
 
     #make sure it returns smth if message is from the bot
     if message.author == client.user:
@@ -61,13 +70,6 @@ async def on_message(message):
 
     #Total Cases in Specified Country or Worldwide
     if msg.startswith("!cases"):
-        msgParameters = msg.split(" ")
-        parameter = ""
-
-        #check if additional parameters added
-        if len(msgParameters) > 1:
-            parameter = msgParameters[1]
-
         #if parameter exists, give data for specified country. Otherwise give worldwide data!
         if parameter == "specifiedCountry":
             data = str(get_worldCases())
