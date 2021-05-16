@@ -6,14 +6,12 @@ Covid-19 Tracker Discord Bot
 
 import os
 import discord
-import requests  #allows us to make http requests to
+import requests  #allows us to make http requests to access APIs
 import json  #data we get from zenquotes API
+from datetime import datetime
 
 client = discord.Client()
 discordToken = os.environ["discordAPI_token"]
-
-#variables
-covid_keyTerms = ["covid", "covid19"]
 
 
 @client.event
@@ -21,7 +19,7 @@ async def on_ready():
     print("We have logged in as {0.user}".format(client))
 
 
-#pulls random quote from ZenQuotesAPI
+#Retrieves random inspirational quote from ZenQuotesAPI
 def get_quote():
     #get json data from api (the quote)
     response = requests.get("https://zenquotes.io/api/random")
@@ -30,29 +28,54 @@ def get_quote():
     return quote
 
 
-#covid_Update cmd from covid API
-def get_coviddata():
+#Retrieves data regarding total cases from Diseases.sh API
+def get_worldCases():
     response = requests.get("https://disease.sh/v3/covid-19/all")
     json_data = json.loads(response.text)
-    data = json_data[0]["q"]
+    data = json_data["cases"]
     return data
 
-#lets Bot read Commands
+#Lets CovidTracker Bot read messages and act
 @client.event
 async def on_message(message):
+    #local variables
+    now = datetime.now()  # datetime object var, local so that it constantly updates date/time
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    msg = message.content
+
     #make sure it returns smth if message is from the bot
     if message.author == client.user:
         return
-    msg = message.content
+
+    #Help Command - lists ALL current bot cmds
+    if msg.startswith("!h" or "!help"):
+        await message.channel.send("Current commands are:")
+        await message.channel.send("!inspire")
+        await message.channel.send("!cases")
+        await message.channel.send("!cases <country>")
 
     #Random Quote command
     if msg.startswith("!inspire"):
         quote = get_quote()
         await message.channel.send(quote)
 
-    #auto-detects if covid terms are mentioned in any message
-    if any(word in msg for word in covid_keyTerms):
-        await message.channel.send("Did I hear something about Covid-19?")
+    #Total Cases in Specified Country or Worldwide
+    if msg.startswith("!cases"):
+        msgParameters = msg.split(" ")
+        parameter = ""
+
+        #check if additional parameters added
+        if len(msgParameters) > 1:
+            parameter = msgParameters[1]
+
+        #if parameter exists, give data for specified country. Otherwise give worldwide data!
+        if parameter == "specifiedCountry":
+            data = str(get_worldCases())
+            await message.channel.send("There are " + data + " coronavirus cases in {} as of {}".format("specified country", dt_string)+" (EST).")
+        else:
+            data = str(get_worldCases())
+            await message.channel.send("There are " + data + " coronavirus cases worldwide as of {}".format(dt_string)+" (EST).")
+
 
 #run the program in the bot (parameter is the bot token)
 client.run(discordToken)
