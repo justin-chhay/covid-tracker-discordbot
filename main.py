@@ -46,13 +46,13 @@ async def on_message(message):
     parameter = ""
     second_parameter = ""
 
-    # check if additional parameters added to command
+    # Check if additional parameters added to command
     if len(msg_parameters) == 2:
         parameter = msg_parameters[1]
     elif len(msg_parameters) == 3:
         second_parameter = msg_parameters[2]
 
-    #make sure it returns smth if message is from the bot
+    #Make sure it returns smth if message is from the bot
     if message.author == client.user:
         return
 
