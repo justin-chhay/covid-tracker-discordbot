@@ -26,10 +26,16 @@ def get_quote():
     #get json data from api (the quote)
     response = requests.get("https://zenquotes.io/api/random")
     json_data = json.loads(response.text)
-    quote = json_data[0]["q"] + " -" + json_data[0][
-        "a"]  #key is q(quote) and a (author), places data in a string
+    quote = json_data[0]["q"] + " -" + json_data[0]["a"]  #key is q(quote) and a (author), places data in a string
     return quote
 
+
+#covid_Update cmd from covid API
+def get_coviddata():
+    response = requests.get("https://disease.sh/v3/covid-19/all")
+    json_data = json.loads(response.text)
+    data = json_data[0]["q"]
+    return data
 
 #lets Bot read Commands
 @client.event
@@ -37,7 +43,6 @@ async def on_message(message):
     #make sure it returns smth if message is from the bot
     if message.author == client.user:
         return
-
     msg = message.content
 
     #Random Quote command
