@@ -2,14 +2,13 @@
 Justin Chhay
 Created 05.16.2021
 Covid-19 Tracker Discord Bot
-Rayn
 '''
 
 import os
 import discord
 import requests  # allows us to make http requests to access APIs
 import json  # data we get from zenquotes API
-from datetime import datetime
+from datetime import datetime  # we can access local pc date and time
 
 client = discord.Client()
 discordToken = os.environ["discordAPI_token"]
@@ -25,18 +24,8 @@ def get_quote():
     # get json data from api (the quote)
     response = requests.get("https://zenquotes.io/api/random")
     json_data = json.loads(response.text)
-    quote = json_data[0]["q"] + " -" + json_data[0]["a"]  # key is q(quote) and a (author), places data in a string
+    quote = json_data[0]["q"] + " - " + json_data[0]["a"]
     return quote
-
-
-'''
-#Format numbers
-def format_num(numStr):
-    if len(numStr) != 3:
-        for letter in range(len(numstr)-1,0):
-    else: #number is 3 digits or less
-        return numStr
-'''
 
 
 # Retrieves worldwide coranvirus data from Diseases.sh API
@@ -68,14 +57,29 @@ def get_country2(country_fname, country_lname):
     return -1  # if specified country does not exist
 
 
+# Returns color for embed msg based on severity of covid in specified country (determined by deaths)
+def get_covid_color(num):
+    x = num["deaths"]
+    if x <= 1000:
+        return 0x4AF106
+    elif x <= 50000:
+        return 0x45731E
+    elif x <= 100000:
+        return 0x675E24
+    elif x <= 500000:
+        return 0x8D472B
+    else:
+        return 0xC82538
+
+
 # Returns embedded message for country (related stats)
 def mkEmbed(data, time):
-    bedmsg = discord.Embed(title=str(data["country"] + ", " + data["continent"]), color=0xD85337)
+    bedmsg = discord.Embed(title=str(data["country"] + ", " + data["continent"]), color=get_covid_color(data))
     bedmsg.add_field(name="Total Cases:", value=str("{:,}".format(data["cases"])), inline=False)
     bedmsg.add_field(name="Active:", value=str("{:,}".format(data["active"])), inline=False)
     bedmsg.add_field(name="Recovered:", value=str("{:,}".format(data["recovered"])), inline=False)
     bedmsg.add_field(name="Deaths:", value=str("{:,}".format(data["deaths"])), inline=False)
-    bedmsg.set_footer(text="Updated at "+time+" EST.")
+    bedmsg.set_footer(text="Updated at " + time + " EST.")
     bedmsg.set_thumbnail(url=str(data["countryInfo"]["flag"]))
     return bedmsg
 
@@ -113,12 +117,14 @@ async def on_message(message):
         await message.channel.send(embed=bedmsg)
 
     # Random Quote command
-    if msg.startswith("!inspire"):
+    if msg.startswith("!i" or "!inspire"):
         quote = get_quote()
-        await message.channel.send(quote)
+        bedmsg = discord.Embed(title="Inspirational Quote", description=quote, color=0x009BFF)
+        bedmsg.set_footer(text="Created by @justin-chhay on GitHub", icon_url="https://i.imgur.com/ORXlNqT.png")
+        await message.channel.send(embed=bedmsg)
 
     # Total Cases in Specified Country or Worldwide
-    if msg.startswith("!cases"):
+    if msg.startswith("!c" or "!cases"):
         # if parameter exists, give data for specified country. Otherwise give worldwide data!
         if parameter != "" and second_parameter == "":  # one word in country name
             data = get_country(parameter)
@@ -141,7 +147,7 @@ async def on_message(message):
             bedmsg.add_field(name="Active:", value=str("{:,}".format(data["active"])), inline=False)
             bedmsg.add_field(name="Recovered:", value=str("{:,}".format(data["recovered"])), inline=False)
             bedmsg.add_field(name="Deaths:", value=str("{:,}".format(data["deaths"])), inline=False)
-            bedmsg.set_footer(text="Updated at "+dt_string+" EST.")
+            bedmsg.set_footer(text="Updated at " + dt_string + " EST.")
             bedmsg.set_thumbnail(url="https://i.imgur.com/yLPDm9H.png")
             await message.channel.send(embed=bedmsg)
 
