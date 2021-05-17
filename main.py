@@ -108,7 +108,7 @@ async def on_message(message):
 
     # Help Command - lists ALL current bot cmds
     if msg.lower().startswith("!h" or "!help"):
-        bedmsg = discord.Embed(title="Help - CovidTracker3000 Bot Cmds", color=0x009BFF)
+        bedmsg = discord.Embed(title="Help - CovidTracker3000 Bot Commands", color=0x009BFF)
         bedmsg.add_field(name="!inspire", value="Receive a random inspirational quote.", inline=False)
         bedmsg.add_field(name="!cases", value="Gives real-time worldwide stats.", inline=False)
         bedmsg.add_field(name="!cases <country>", value="Gives real-time stats for specified country parameter.",
