@@ -75,7 +75,7 @@ def mkEmbed(data, time):
     bedmsg.add_field(name="Active:", value=str("{:,}".format(data["active"])), inline=False)
     bedmsg.add_field(name="Recovered:", value=str("{:,}".format(data["recovered"])), inline=False)
     bedmsg.add_field(name="Deaths:", value=str("{:,}".format(data["deaths"])), inline=False)
-    bedmsg.add_field(name="Time (EST)", value=str(time), inline=False)
+    bedmsg.set_footer(text="Updated at "+time+" EST.")
     bedmsg.set_thumbnail(url=str(data["countryInfo"]["flag"]))
     return bedmsg
 
@@ -85,7 +85,7 @@ def mkEmbed(data, time):
 async def on_message(message):
     # local variables
     now = datetime.now()  # datetime object var, local so that it constantly updates date/time
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    dt_string = now.strftime("%d/%m/%Y • %H:%M:%S")
     msg = message.content
     msg_parameters = msg.split(" ")
     parameter = ""
@@ -141,7 +141,7 @@ async def on_message(message):
             bedmsg.add_field(name="Active:", value=str("{:,}".format(data["active"])), inline=False)
             bedmsg.add_field(name="Recovered:", value=str("{:,}".format(data["recovered"])), inline=False)
             bedmsg.add_field(name="Deaths:", value=str("{:,}".format(data["deaths"])), inline=False)
-            bedmsg.add_field(name="Time (EST)", value=dt_string, inline=False)
+            bedmsg.set_footer(text="Updated at "+dt_string+" EST.")
             bedmsg.set_thumbnail(url="https://i.imgur.com/yLPDm9H.png")
             await message.channel.send(embed=bedmsg)
 
