@@ -28,6 +28,7 @@ def get_quote():
     quote = json_data[0]["q"] + " -" + json_data[0]["a"]  # key is q(quote) and a (author), places data in a string
     return quote
 
+
 '''
 #Format numbers
 def format_num(numStr):
@@ -37,12 +38,12 @@ def format_num(numStr):
         return numStr
 '''
 
-# Retrieves data regarding total cases from Diseases.sh API
-def get_worldCases():
+
+# Retrieves worldwide coranvirus data from Diseases.sh API
+def get_worldData():
     response = requests.get("https://disease.sh/v3/covid-19/all")
     json_data = json.loads(response.text)
-    data = json_data["cases"]
-    return data
+    return json_data
 
 
 # Retrieves data regarding specified country from Diseases.sh API
@@ -71,6 +72,7 @@ def get_country2(country_fname, country_lname):
 def mkEmbed(data, time):
     bedmsg = discord.Embed(title=str(data["country"] + ", " + data["continent"]), color=0xD85337)
     bedmsg.add_field(name="Total Cases:", value=str("{:,}".format(data["cases"])), inline=False)
+    bedmsg.add_field(name="Active:", value=str("{:,}".format(data["active"])), inline=False)
     bedmsg.add_field(name="Recovered:", value=str("{:,}".format(data["recovered"])), inline=False)
     bedmsg.add_field(name="Deaths:", value=str("{:,}".format(data["deaths"])), inline=False)
     bedmsg.add_field(name="Time (EST)", value=str(time), inline=False)
@@ -102,12 +104,12 @@ async def on_message(message):
 
     # Help Command - lists ALL current bot cmds
     if msg.startswith("!h" or "!help"):
-        await message.channel.send("Current commands are:")
         bedmsg = discord.Embed(title="Help - Bot Commands", color=0x009BFF)
         bedmsg.add_field(name="!inspire", value="Receive a random inspirational quote.", inline=False)
         bedmsg.add_field(name="!cases", value="Gives real-time worldwide stats.", inline=False)
-        bedmsg.add_field(name="!cases <country>", value="Gives real-time stats for specified country parameter.", inline=False)
-        bedmsg.set_footer(text="Created by @justin-chhay on GitHub",icon_url="https://i.imgur.com/ORXlNqT.png")
+        bedmsg.add_field(name="!cases <country>", value="Gives real-time stats for specified country parameter.",
+                         inline=False)
+        bedmsg.set_footer(text="Created by @justin-chhay on GitHub", icon_url="https://i.imgur.com/ORXlNqT.png")
         await message.channel.send(embed=bedmsg)
 
     # Random Quote command
@@ -133,9 +135,15 @@ async def on_message(message):
             else:
                 await message.channel.send("Input for country is invalid.")
         else:  # no parameter, worldwide stats
-            data = str(get_worldCases())
-            await message.channel.send(
-                "There are " + data + " coronavirus cases worldwide as of {}".format(dt_string) + " (EST).")
+            data = get_worldData()
+            bedmsg = discord.Embed(title="Worldwide", color=0xD85337)
+            bedmsg.add_field(name="Total Cases:", value=str("{:,}".format(data["cases"])), inline=False)
+            bedmsg.add_field(name="Active:", value=str("{:,}".format(data["active"])), inline=False)
+            bedmsg.add_field(name="Recovered:", value=str("{:,}".format(data["recovered"])), inline=False)
+            bedmsg.add_field(name="Deaths:", value=str("{:,}".format(data["deaths"])), inline=False)
+            bedmsg.add_field(name="Time (EST)", value=dt_string, inline=False)
+            bedmsg.set_thumbnail(url="https://i.imgur.com/yLPDm9H.png")
+            await message.channel.send(embed=bedmsg)
 
 
 # run the program in the bot (parameter is the bot token)
