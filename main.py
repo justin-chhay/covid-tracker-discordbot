@@ -107,7 +107,7 @@ async def on_message(message):
         return
 
     # Help Command - lists ALL current bot cmds
-    if msg.startswith("!h" or "!help"):
+    if msg.lower().startswith("!h" or "!help"):
         bedmsg = discord.Embed(title="Help - Bot Commands", color=0x009BFF)
         bedmsg.add_field(name="!inspire", value="Receive a random inspirational quote.", inline=False)
         bedmsg.add_field(name="!cases", value="Gives real-time worldwide stats.", inline=False)
@@ -117,14 +117,14 @@ async def on_message(message):
         await message.channel.send(embed=bedmsg)
 
     # Random Quote command
-    if msg.startswith("!i" or "!inspire"):
+    if msg.lower().startswith("!i" or "!inspire"):
         quote = get_quote()
         bedmsg = discord.Embed(title="Inspirational Quote", description=quote, color=0x009BFF)
         bedmsg.set_footer(text="Created by @justin-chhay on GitHub", icon_url="https://i.imgur.com/ORXlNqT.png")
         await message.channel.send(embed=bedmsg)
 
     # Total Cases in Specified Country or Worldwide
-    if msg.startswith("!c" or "!cases"):
+    if msg.lower().startswith("!c" or "!cases"):
         # if parameter exists, give data for specified country. Otherwise give worldwide data!
         if parameter != "" and second_parameter == "":  # one word in country name
             data = get_country(parameter)
