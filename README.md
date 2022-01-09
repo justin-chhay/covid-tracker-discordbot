@@ -6,7 +6,7 @@ Python, Discord.py, Open Disease API
 ## Getting Started
 ![Help Command](images/help_command.png)
 
-' !h '
+` !h `
 
 The help command simply lists all the available commands the Discord Bot has:
 1. !inspire - returns a random inspiration quote (taken from ZenQuotes API)
