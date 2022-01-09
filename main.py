@@ -5,10 +5,11 @@ Covid-19 Tracker Discord Bot
 '''
 
 import os
-import discord
+import discord # import discord.py commands so that we can manipulate the bot's Discord ,essages
 import requests  # allows us to make http requests to access APIs
 import json  # data we get from zenquotes API
 from datetime import datetime  # we can access local pc date and time
+
 
 client = discord.Client()
 discordToken = os.environ["discordAPI_token"]
@@ -28,7 +29,7 @@ def get_quote():
     return quote
 
 
-# Retrieves worldwide coranvirus data from Diseases.sh API
+# Retrieves worldwide coronavirus data from Diseases.sh API
 def get_worldData():
     response = requests.get("https://disease.sh/v3/covid-19/all")
     json_data = json.loads(response.text)
@@ -46,7 +47,7 @@ def get_country(country):
     return -1  # if specified country does not exist
 
 
-# Retrieves data regarding specified country from Diseases.sh API
+# Retrieves data regarding specified country (IF HAS TWO WORDS IN NAME) from Diseases.sh API
 def get_country2(country_fname, country_lname):
     response = requests.get("https://disease.sh/v3/covid-19/countries")
     json_data = json.loads(response.text)
@@ -73,7 +74,7 @@ def get_covid_color(num):
 
 
 # Returns embedded message for country (related stats)
-def mkEmbed(data, time):
+def makeEmbed(data, time):
     bedmsg = discord.Embed(title=str(data["country"] + ", " + data["continent"]), color=get_covid_color(data))
     bedmsg.add_field(name="Total Cases:", value=str("{:,}".format(data["cases"])), inline=False)
     bedmsg.add_field(name="Active:", value=str("{:,}".format(data["active"])), inline=False)
@@ -89,16 +90,16 @@ def mkEmbed(data, time):
 async def on_message(message):
     # local variables
     now = datetime.now()  # datetime object var, local so that it constantly updates date/time
-    dt_string = now.strftime("%d/%m/%Y • %H:%M:%S")
-    msg = message.content
-    msg_parameters = msg.split(" ")
+    dt_string = now.strftime("%d/%m/%Y • %H:%M:%S") #format the datetime object into a string
+    msg = message.content #command sent from user
+    msg_parameters = msg.split(" ") #split up command into an array (to discern from command indentifier and value)
     parameter = ""
     second_parameter = ""
 
     # Check if additional parameters added to command
     if len(msg_parameters) == 2:
         parameter = msg_parameters[1]
-    elif len(msg_parameters) == 3:
+    elif len(msg_parameters) == 3: #special case, if country name has two words
         parameter = msg_parameters[1]
         second_parameter = msg_parameters[2]
 
@@ -130,14 +131,14 @@ async def on_message(message):
             data = get_country(parameter)
             # Sends out embed message including stats for specified country
             if data != -1:
-                await message.channel.send(embed=mkEmbed(data, dt_string))
+                await message.channel.send(embed=makeEmbed(data, dt_string))
             else:
                 await message.channel.send("Input for country is invalid.")
         elif parameter != "" and second_parameter != "":  # two words in country name
             data = get_country2(parameter, second_parameter)
             # Sends out embed message including stats for specified country
             if data != -1:
-                await message.channel.send(embed=mkEmbed(data, dt_string))
+                await message.channel.send(embed=makeEmbed(data, dt_string))
             else:
                 await message.channel.send("Input for country is invalid.")
         else:  # no parameter, worldwide stats
