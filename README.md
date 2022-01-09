@@ -1,4 +1,4 @@
-# Coronavirus Statistics Tracker Discord Bot
+# Coronavirus Statistics Tracker Discord Bot 🤖
 ## Table of Contents
 - [Description](#desc)
 - [Technologies Used](#tech)
@@ -7,7 +7,7 @@
 - [Credits](#credits)
 
 ## Description <a name="desc"></a>
-I give real-time updates on news and statistics regarding Covid-19 in various countries! A personal side-project to help familiarize myself with Python and APIs.
+A bot which gives real-time updates on news and statistics regarding Covid-19 in various countries! A personal side-project to help familiarize myself with Python and APIs.
 ## Technologies Used <a name="tech"></a>
 > Python, Discord.py, Open Disease API
 ## Getting Started <a name="start"></a>
